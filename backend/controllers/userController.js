@@ -98,7 +98,9 @@ exports.deleteUser = async (req, res) => {
 // Update User
 exports.updateUser = async (req, res) => {
   try {
+    console.log("Update request received", req.body);
     const { userId } = req.params;
+    console.log("User ID:", userId);
     const updateData = { ...req.body };
 
     // If password is being updated, hash it first
@@ -113,7 +115,8 @@ exports.updateUser = async (req, res) => {
     }).select("-password");
 
     if (!updatedUser) return res.status(404).json({ message: "User not found" });
-
+    
+    console.log("User updated successfully:", updatedUser);
     res.json({ message: "User updated successfully", user: updatedUser });
   } catch (err) {
     console.error("Error updating user:", err);

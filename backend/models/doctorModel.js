@@ -31,9 +31,42 @@ const doctorSchema = new mongoose.Schema({
     required: true,
     minlength: 6,
   },
-
-},{
-  timestamps: true // adds createdAt and updatedAt
+  rating: {
+    type: Number,
+    default: 4.5, // You can adjust default as needed
+  },
+  location: {
+    type: String,
+  },
+  fee: {
+    type: Number,
+    default: 300,
+  },
+  patientsPerDay: {
+    type: Number,
+    default: 10,
+  },
+  timePerPatient: {
+    type: Number,
+    default: 15, // in minutes
+  },
+  currentQueue: {
+    type: Number,
+    default: 0,
+  },
+  feedback: [
+    {
+      patientName: String,
+      comment: String,
+      rating: Number,
+      createdAt: {
+        type: Date,
+        default: Date.now,
+      },
+    },
+  ],
+}, {
+  timestamps: true,
 });
 
 // 🔐 Hash password before saving
@@ -49,11 +82,9 @@ doctorSchema.pre("save", async function (next) {
   }
 });
 
-
-// ✅ Add comparePassword method
+// ✅ Compare password
 doctorSchema.methods.comparePassword = async function (enteredPassword) {
   return await bcrypt.compare(enteredPassword, this.password);
 };
-
 
 module.exports = mongoose.model("Doctor", doctorSchema);

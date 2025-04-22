@@ -14,7 +14,7 @@ export const AuthProvider = ({ children }) => {
   const login = (userData, userRole) => {
     setUser(userData);
     setRole(userRole);
-    localStorage.setItem("userId", userData._id);     // Save user ID
+    // localStorage.setItem("userId", userData._id);     // Save user ID
     localStorage.setItem("userRole", userRole);       // Save role
   };
 

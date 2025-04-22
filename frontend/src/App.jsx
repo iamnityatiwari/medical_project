@@ -20,6 +20,7 @@ import Profile from "./components/ClientSideDoctorUI/Profile";
 import HistoryAppointment from "./components/ClientSideDoctorUI/HistoryAppointment";
 import CurrentAppointment from "./components/ClientSideDoctorUI/CurrentAppointment";
 import UserWork from "./components/ClientSideDoctorUI/UserWork";
+import SlotTable from "./components/ClientSideDoctorUI/Slot/SlotTable";
 
 const AppContent = () => {
   const location = useLocation();
@@ -32,6 +33,7 @@ const AppContent = () => {
       {shouldShowNav && <UnifiedNavBar />}
       <div className="min-h-screen bg-gray-100">
         <Routes>
+          <Route path="/test" element={<SlotTable/>} />"
           <Route path="/" element={<LoginPage />} />
           <Route path="/signup" element={<SignUpPage />} />
 

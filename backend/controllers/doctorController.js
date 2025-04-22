@@ -91,13 +91,16 @@ const setDoctorProfile = async (req, res) => {
 // ✅ Update Profile by Email (PUT /profile)
 const updateDoctorProfile = async (req, res) => {
   try {
-    const { email, password } = req.body;
+    const { email } = req.body;
 
     // If password is present, hash it before update
-    if (password) {
+    /* 
+        if (password) {
       const salt = await bcrypt.genSalt(10);
       req.body.password = await bcrypt.hash(password, salt);
     }
+    */
+   
 
     const updatedDoctor = await Doctor.findOneAndUpdate({ email }, req.body, { new: true });
     if (!updatedDoctor) return res.status(404).json({ message: "Doctor not found" });
