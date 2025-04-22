@@ -2,6 +2,7 @@ import { Navigate } from "react-router-dom";
 import { useAuth } from "../store/AuthContext";
 
 const ProtectedRoute = ({ allowedRole, children }) => {
+  
   const { user, role, login } = useAuth();
 
   // Fallback to localStorage in case context is empty (e.g., after refresh)

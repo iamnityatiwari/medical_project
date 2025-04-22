@@ -2,20 +2,29 @@ const Doctor = require("../models/doctorModel");
 const bcrypt = require('bcrypt');
 
 
-// 🔐 Register Doctor
+// 🔐 Register Doctor with password hashing
 const registerDoctor = async (req, res) => {
   try {
-    const { email } = req.body;
+    const { email, password, ...rest } = req.body;
 
-    // Check if doctor already exists by email
+    // Check if doctor already exists
     const existing = await Doctor.findOne({ email });
     if (existing) return res.status(400).json({ message: "Doctor already exists" });
 
-    // Create and save new doctor (pre-save will hash the password)
-    const newDoctor = new Doctor(req.body);
-    await newDoctor.save();
+    // Hash the password manually
+    const salt = await bcrypt.genSalt(10);
+    const hashedPassword = await bcrypt.hash(password, salt);
 
-    // Return success
+    // Create doctor with hashed password
+    const newDoctor = new Doctor({
+      email,
+      password: hashedPassword,
+      ...rest,
+    });
+
+    // Save to DB
+    await newDoctor.save();
+    console.log("🟢 Doctor registered successfully:", newDoctor);
     res.status(201).json({ message: "Doctor registered successfully", user: newDoctor });
   } catch (error) {
     res.status(500).json({ message: "Server error", error });
@@ -92,18 +101,11 @@ const setDoctorProfile = async (req, res) => {
 const updateDoctorProfile = async (req, res) => {
   try {
     const { email } = req.body;
-
-    // If password is present, hash it before update
-    /* 
-        if (password) {
-      const salt = await bcrypt.genSalt(10);
-      req.body.password = await bcrypt.hash(password, salt);
-    }
-    */
-   
+    console.log("🟡 Updating doctor profile with:", req.body);
 
     const updatedDoctor = await Doctor.findOneAndUpdate({ email }, req.body, { new: true });
     if (!updatedDoctor) return res.status(404).json({ message: "Doctor not found" });
+    console.log("🟢 Doctor profile updated successfully");
     res.status(200).json(updatedDoctor);
   } catch (error) {
     res.status(500).json({ message: "Server error", error });
@@ -135,16 +137,10 @@ const getDoctorById = async (req, res) => {
 // ✅ Update Doctor by ID
 const updateDoctorById = async (req, res) => {
   try {
-    const { password } = req.body;
-
-    // If password is present, hash it
-    if (password) {
-      const salt = await bcrypt.genSalt(10);
-      req.body.password = await bcrypt.hash(password, salt);
-    }
-
+  
     const doctor = await Doctor.findByIdAndUpdate(req.params.id, req.body, { new: true });
     if (!doctor) return res.status(404).json({ message: "Doctor not found" });
+    console.log("🟢 Doctor updated successfully:", doctor);
     res.status(200).json(doctor);
   } catch (error) {
     res.status(500).json({ message: "Server error", error });

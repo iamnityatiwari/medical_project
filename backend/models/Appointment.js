@@ -1,23 +1,37 @@
-// models/Appointment.js
-
 const mongoose = require("mongoose");
 
 const appointmentSchema = new mongoose.Schema({
   doctor: {
     type: mongoose.Schema.Types.ObjectId,
-    ref: "Doctor", // references the Doctor model
+    ref: "Doctor",
     required: true,
   },
   user: {
     type: mongoose.Schema.Types.ObjectId,
-    ref: "User", // references the User model
+    ref: "User",
     required: true,
   },
   appointmentTime: {
     type: Date,
     required: true,
   },
-  symptoms: {
+  slot: {
+    type: String, // e.g. "6.41 - 7.00"
+    required: true,
+  },
+  date: {
+    type: String, // e.g. "2025-04-22"
+    required: true,
+  },
+  name: {
+    type: String,
+    required: true,
+  },
+  age: {
+    type: String, // or Number, depending on your use
+    required: true,
+  },
+  description: {
     type: String,
   },
   status: {
@@ -25,8 +39,8 @@ const appointmentSchema = new mongoose.Schema({
     enum: ["Pending", "Confirmed", "Completed", "Cancelled"],
     default: "Pending",
   },
-},{
-  timestamps: true // adds createdAt and updatedAt
+}, {
+  timestamps: true,
 });
 
 module.exports = mongoose.model("Appointment", appointmentSchema);

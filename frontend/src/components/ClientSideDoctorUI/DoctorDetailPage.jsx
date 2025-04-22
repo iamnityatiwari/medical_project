@@ -6,11 +6,25 @@ import DoctorAIChatbot from "./DoctorAIChatbot";
 import MyImage from "../../images/abc.webp";
 import axios from "axios";
 
+
+//utility functions to calculate slot time and format time
+import { calculateSlotTime,formatTime12Hour } from "../Services/services1"; // Assuming 
+import AppointmentSection from "./DoctorSectionUserSide/AppointmentSection";
+import { DoctorPersonalInfo } from "./DoctorSectionUserSide/DoctorPersonalInfo";
+import SlotTable from "./Slot/SlotTable";
+
+
 const DoctorDetailPage = () => {
   const { id } = useParams();
   const [doctor, setDoctor] = useState(null);
   const [loading, setLoading] = useState(true);
-  const [showForm, setShowForm] = useState(false);
+  // const [showForm, setShowForm] = useState(false);
+
+  const [selectedSlots, setSelectedSlots] = useState([]); // For storing selected slots{Slottbale} => object{Name,Slot, time, date}
+  console.log(selectedSlots);
+  
+  const userId = localStorage.getItem("userId");
+
 
   useEffect(() => {
     const fetchDoctor = async () => {
@@ -25,6 +39,18 @@ const DoctorDetailPage = () => {
     };
 
     fetchDoctor();
+    setLoading(true);
+    const fetchselectedSlots = async () => {
+      try {
+        const res = await axios.get(`/api/appointments/doctor/${id}/upcoming`);
+        setSelectedSlots(res.data);
+        setLoading(false);
+      } catch (err) {
+        console.error("Error fetching selected slots:", err);
+        setLoading(false);
+      }
+    };
+    fetchselectedSlots();
   }, [id]);
 
   if (loading) return <p className="text-center mt-10 text-gray-600">Loading...</p>;
@@ -34,8 +60,9 @@ const DoctorDetailPage = () => {
 
   return (
     <div className="min-h-screen bg-red-50 py-10 px-4">
-      <div className="max-w-6xl mx-auto grid grid-cols-1 md:grid-cols-3 gap-6">
-
+      
+      <div className="max-w-6xl mx-auto ">
+ 
         {/* Left + Middle Section */}
         <div className="md:col-span-2 bg-white p-6 rounded shadow-md border-l-4 border-red-500">
           {/* Header */}
@@ -56,63 +83,6 @@ const DoctorDetailPage = () => {
               </p>
             </div>
           </div>
-
-          {/* Personal Info */}
-          <div className="space-y-2 mb-6">
-                <p className="text-gray-800">
-                  📞 <span className="font-medium">Phone:</span> {doctor.phone}
-                </p>
-                <p className="text-gray-800">
-                  📧 <span className="font-medium">Email:</span> {doctor.email}
-                </p>
-                <p className="text-gray-800">
-                  🎓 <span className="font-medium">Education:</span> {doctor.education}
-                </p>
-                <p className="text-gray-800">
-                  🧑‍⚕️ <span className="font-medium">Experience:</span> {doctor.experience}
-                </p>
-                <p className="text-gray-800">
-                  🏥 <span className="font-medium">Clinic:</span> {doctor.clinic}
-                </p>
-                <p className="text-gray-800">
-                  📍 <span className="font-medium">Location:</span> {doctor.location}
-                </p>
-              </div>
-
-
-          {/* Appointment Info Section */}
-          <div className="bg-white p-6 rounded shadow-md border border-red-300 mb-6">
-            <h3 className="text-lg font-semibold text-red-600 mb-6">Appointment Info</h3>
-
-            <div className="grid gap-3 mb-6">
-              <div className="flex justify-between">
-                <span className="text-gray-700 font-medium">Fee:</span>
-                <span className="text-black font-semibold">₹{doctor.fee}</span>
-              </div>
-              <div className="flex justify-between">
-                <span className="text-gray-700 font-medium">Patients/day:</span>
-                <span className="text-black font-semibold">{doctor.patientsPerDay}</span>
-              </div>
-              <div className="flex justify-between">
-                <span className="text-gray-700 font-medium">Time per patient:</span>
-                <span className="text-black font-semibold">{doctor.timePerPatient} mins</span>
-              </div>
-            </div>
-
-            {/* Queue */}
-            <div className="flex justify-center mb-6">
-              <div className="w-24 h-24 rounded-full bg-red-600 flex items-center justify-center text-white text-lg font-bold shadow-lg">
-                Queue: {doctor.currentQueue}
-              </div>
-            </div>
-
-            <div className="text-center">
-              <p className="text-red-700 font-semibold text-lg">
-                ⏱ Estimated time for new appointment: {estimatedTime} mins
-              </p>
-            </div>
-          </div>
-
           {/* Show Location */}
           <div className="mb-4 flex justify-end">
             <a
@@ -127,17 +97,45 @@ const DoctorDetailPage = () => {
             </a>
           </div>
 
-          {/* Appointment Button */}
-          {!showForm ? (
-            <button
-              onClick={() => setShowForm(true)}
-              className="bg-red-600 hover:bg-red-700 text-white px-4 py-2 rounded mt-4"
-            >
-              Book Appointment
-            </button>
-          ) : (
-            <AppointmentForm doctor={doctor} queueNumber={doctor.currentQueue + 1} />
-          )}
+          {/* Personal Info */}
+          <DoctorPersonalInfo doctor={doctor} />
+          
+
+
+          {/* Appointment Info Section */}
+          <AppointmentSection doctor={doctor} />
+
+
+          <div className="bg-white p-6 rounded shadow-md border border-red-300 mb-6">
+             
+            {/* Queue */}
+            <div className="flex justify-center mb-6">
+              <div className="w-24 h-24 rounded-full bg-red-600 flex items-center justify-center text-white text-lg font-bold shadow-lg">
+                Queue: {doctor.currentQueue}
+              </div>
+            </div>
+
+            {/* Slot Time Estimation */}
+            <div className="text-center">
+              <p className="text-red-700 font-semibold text-lg">
+                Your Slot No: {doctor.currentQueue + 1}
+              </p>
+              <p className="text-gray-700 text-sm mt-1">
+                Estimated Time: {calculateSlotTime(doctor.startTime, doctor.interval, doctor.currentQueue)}
+              </p>
+            </div>
+
+          </div>
+
+
+         {/* Slot Booking */}    {/* Appointment Button */}
+         <SlotTable
+            selectedSlots={selectedSlots}
+            setSelectedSlots={setSelectedSlots}
+            doctorId={id}
+          />
+       
+        
 
           {/* Feedback Section */}
           <div className="mt-6">
@@ -146,7 +144,7 @@ const DoctorDetailPage = () => {
         </div>
 
         {/* Chatbot */}
-        <div className="col-span-1 h-[410px] overflow-y-auto">
+        <div className="col-span-1 h-[410px] overflow-y-auto my-4">
           <DoctorAIChatbot />
         </div>
       </div>

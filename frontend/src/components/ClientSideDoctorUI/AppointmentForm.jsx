@@ -1,5 +1,5 @@
 import { useState } from "react";
-
+// not use the page 
 const AppointmentForm = ({ doctor, queueNumber }) => {
   const [formData, setFormData] = useState({
     name: "",
