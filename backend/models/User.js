@@ -4,24 +4,41 @@ const bcrypt = require("bcryptjs");
 const userSchema = new mongoose.Schema({
   name: {
     type: String,
-    required: true,
+    required: [true, "Name is required"],
+    trim: true,
   },
   email: {
     type: String,
-    required: true,
+    required: [true, "Email is required"],
     unique: true,
+    lowercase: true,
   },
   phone: {
     type: String,
+    trim: true,
   },
   password: {
     type: String,
-    required: true,
+    required: [true, "Password is required"],
+    minlength: [6, "Password must be at least 6 characters"],
   },
-  age: Number,
-  gender: String,
-},{
-  timestamps: true // adds createdAt and updatedAt
+  age: {
+    type: Number,
+    min: 0,
+  },
+  gender: {
+    type: String,
+    enum: ["Male", "Female", "Other"],
+  },
+  dob: {
+    type: String,
+  },
+  address: {
+    type: String,
+    trim: true,
+  },
+}, {
+  timestamps: true, // adds createdAt and updatedAt
 });
 
 // 🔐 Hash password before saving
@@ -37,7 +54,7 @@ const userSchema = new mongoose.Schema({
 //   }
 // });
 
-// Compare the entered password with the hashed password in the database
+// ✅ Match password method
 userSchema.methods.matchPassword = async function (enteredPassword) {
   return await bcrypt.compare(enteredPassword, this.password);
 };

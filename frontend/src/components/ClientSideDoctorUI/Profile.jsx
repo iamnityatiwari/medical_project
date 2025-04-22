@@ -1,33 +1,55 @@
 import React, { useEffect, useState } from "react";
 import axios from "axios";
 import { useNavigate } from "react-router-dom";
+import UserForm from "./UserForm";
 
 const Profile = () => {
   const [user, setUser] = useState(null);
   const [loading, setLoading] = useState(true);
+  const [editMode, setEditMode] = useState(false);
+  const [formData, setFormData] = useState({});
   const navigate = useNavigate();
+
   const userId = localStorage.getItem("userId");
-  const userRole = localStorage.getItem("userRole");
+
+  // ✅ Move fetchUser outside so it can be reused
+  const fetchUser = async () => {
+    if (!userId) return;
+
+    try {
+      const res = await axios.get(`/api/users/${userId}`);
+      setUser(res.data);
+      setFormData(res.data);
+    } catch (err) {
+      console.error("Failed to fetch user:", err);
+    } finally {
+      setLoading(false);
+    }
+  };
 
   useEffect(() => {
-    const fetchUser = async () => {
-      if (!userId) {
-        console.warn("No user ID found.");
-        return;
-      }
-
-      try {
-        const res = await axios.get(`/api/users/${userId}`);
-        setUser(res.data);
-      } catch (err) {
-        console.error("Failed to fetch user:", err);
-      } finally {
-        setLoading(false);
-      }
-    };
-
     fetchUser();
   }, [userId]);
+
+  const handleChange = (e) => {
+    setFormData((prev) => ({
+      ...prev,
+      [e.target.name]: e.target.value,
+    }));
+  };
+
+  const handleUpdate = async (e) => {
+    e.preventDefault();
+    try {
+      const res = await axios.put(`/api/users/${userId}`, formData);
+      setEditMode(false);
+      setUser(res.data); // Immediately reflect changes
+      setFormData(res.data);
+      await fetchUser(); // Ensure fresh data
+    } catch (err) {
+      console.error("Update failed:", err);
+    }
+  };
 
   if (loading) {
     return (
@@ -39,27 +61,43 @@ const Profile = () => {
 
   if (!user) {
     navigate("/");
+    return null; // Prevents render after navigation
   }
 
   return (
     <div className="min-h-screen bg-gray-50 p-6">
-      <h1 className="text-3xl font-bold text-red-600 mb-6">Welcome, {user.name}</h1>
+      <h1 className="text-3xl font-bold text-red-600 mb-6">
+        Welcome, {user.name}
+      </h1>
 
       <div className="max-w-3xl mx-auto bg-white shadow-lg rounded-lg p-6 border border-red-300">
-        <div className="mb-4">
-          <h2 className="text-xl font-semibold text-gray-700 mb-2">{user.name}</h2>
-          
+        <div className="flex justify-between items-center mb-4">
+          <h2 className="text-xl font-semibold text-gray-700">{user.name}</h2>
+          <button
+            onClick={() => setEditMode(!editMode)}
+            className="text-sm text-white bg-red-500 hover:bg-red-600 px-4 py-1 rounded"
+          >
+            {editMode ? "Cancel" : "Edit Profile"}
+          </button>
         </div>
 
-        <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 mt-6 text-gray-700">
-          <div><strong>Email:</strong> <p>{user.email}</p></div>
-          <div><strong>Phone:</strong> <p>{user.phone}</p></div>
-          <div><strong>Gender:</strong> <p>{user.gender || "N/A"}</p></div>
-          <div><strong>Date of Birth:</strong> <p>{user.dob || "N/A"}</p></div>
-          <div className="sm:col-span-2">
-            <strong>Address:</strong> <p>{user.address || "N/A"}</p>
+        {!editMode ? (
+          <div className="space-y-2 text-gray-700">
+            <p>📧 <strong>Email:</strong> {user.email}</p>
+            <p>📞 <strong>Phone:</strong> {user.phone}</p>
+            <p>🚻 <strong>Gender:</strong> {user.gender || "N/A"}</p>
+            <p>🎂 <strong>Date of Birth:</strong> {user.dob || "N/A"}</p>
+            <p>🏠 <strong>Address:</strong> {user.address || "N/A"}</p>
           </div>
-        </div>
+        ) : (
+          <UserForm
+            formData={formData}
+            handleChange={handleChange}
+            handleUpdate={handleUpdate}
+            editMode={editMode}
+          />
+        
+        )}
       </div>
     </div>
   );

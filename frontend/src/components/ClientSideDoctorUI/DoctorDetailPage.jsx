@@ -57,6 +57,29 @@ const DoctorDetailPage = () => {
             </div>
           </div>
 
+          {/* Personal Info */}
+          <div className="space-y-2 mb-6">
+                <p className="text-gray-800">
+                  📞 <span className="font-medium">Phone:</span> {doctor.phone}
+                </p>
+                <p className="text-gray-800">
+                  📧 <span className="font-medium">Email:</span> {doctor.email}
+                </p>
+                <p className="text-gray-800">
+                  🎓 <span className="font-medium">Education:</span> {doctor.education}
+                </p>
+                <p className="text-gray-800">
+                  🧑‍⚕️ <span className="font-medium">Experience:</span> {doctor.experience}
+                </p>
+                <p className="text-gray-800">
+                  🏥 <span className="font-medium">Clinic:</span> {doctor.clinic}
+                </p>
+                <p className="text-gray-800">
+                  📍 <span className="font-medium">Location:</span> {doctor.location}
+                </p>
+              </div>
+
+
           {/* Appointment Info Section */}
           <div className="bg-white p-6 rounded shadow-md border border-red-300 mb-6">
             <h3 className="text-lg font-semibold text-red-600 mb-6">Appointment Info</h3>
@@ -90,7 +113,7 @@ const DoctorDetailPage = () => {
             </div>
           </div>
 
-          {/* Location */}
+          {/* Show Location */}
           <div className="mb-4 flex justify-end">
             <a
               href={`https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(
@@ -100,7 +123,7 @@ const DoctorDetailPage = () => {
               rel="noopener noreferrer"
               className="text-sm text-red-700 hover:underline hover:text-red-800"
             >
-              📍 Show Location
+              📍 Show on Google Maps
             </a>
           </div>
 
