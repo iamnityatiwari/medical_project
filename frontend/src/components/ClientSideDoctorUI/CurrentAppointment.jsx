@@ -1,10 +1,12 @@
 import React, { useEffect, useState } from "react";
 import axios from "axios";
-import moment from "moment"; // Use dayjs if preferred
+import moment from "moment";
+import { useNavigate } from "react-router-dom";
 
 const CurrentAppointment = () => {
   const [appointments, setAppointments] = useState([]);
-  const userId = localStorage.getItem("userId"); // Assuming userId is stored in localStorage
+  const userId = localStorage.getItem("userId");
+  const navigate = useNavigate();
 
   useEffect(() => {
     const fetchAppointments = async () => {
@@ -60,6 +62,19 @@ const CurrentAppointment = () => {
                   <p className="text-sm text-gray-600">Doctor ID: {appt.doctorId}</p>
                   <p className="text-sm text-gray-600">Name: {appt.name}, Age: {appt.age}</p>
                   <p className="text-sm text-gray-600">Reason: {appt.description}</p>
+
+                  {appt.status === "confirmed" && (
+                    <div className="mt-4 text-right">
+                      <a
+                        href={`/room/room-${appt._id}`}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="inline-block px-4 py-2 bg-blue-600 text-white text-sm rounded hover:bg-blue-700"
+                      >
+                        Join Call
+                      </a>
+                    </div>
+                  )}
                 </div>
               ))}
             </div>

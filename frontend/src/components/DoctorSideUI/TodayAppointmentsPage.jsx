@@ -29,7 +29,7 @@ export default function TodayAppointmentsPage() {
           const apptDate = new Date(appt.appointmentTime);
           return apptDate >= todayStart && apptDate <= todayEnd;
         });
-        
+
         setAppointments(todayAppointments);
       } catch (err) {
         console.error("Failed to fetch appointments", err);
@@ -69,17 +69,30 @@ export default function TodayAppointmentsPage() {
                 <td className="px-6 py-4">{appt.description}</td>
                 <td className="px-6 py-4">
                   <span
-                    className={`px-2 py-1 rounded-full text-xs font-medium ${appt.status === "Pending"
+                    className={`px-2 py-1 rounded-full text-xs font-medium ${
+                      appt.status === "Pending"
                         ? "bg-yellow-100 text-yellow-800"
                         : appt.status === "Completed"
-                          ? "bg-green-100 text-green-800"
-                          : "bg-gray-200 text-gray-700"
-                      }`}
+                        ? "bg-green-100 text-green-800"
+                        : appt.status === "confirmed"
+                        ? "bg-blue-100 text-blue-800"
+                        : "bg-gray-200 text-gray-700"
+                    }`}
                   >
                     {appt.status}
                   </span>
                 </td>
                 <td className="px-6 py-4 text-right space-x-2">
+                  {appt.status === "confirmed" && (
+                    <a
+                      href={`/room/room-${appt._id}`}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="px-3 py-1 rounded bg-blue-600 text-white text-xs hover:bg-blue-700"
+                    >
+                      Start Call
+                    </a>
+                  )}
                   <button className="px-3 py-1 rounded bg-green-600 text-white text-xs hover:bg-green-700">
                     Complete
                   </button>
@@ -97,7 +110,6 @@ export default function TodayAppointmentsPage() {
               </tr>
             )}
           </tbody>
-
         </table>
       </div>
     </div>

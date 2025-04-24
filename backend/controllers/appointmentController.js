@@ -115,6 +115,7 @@ exports.getUpcomingAppointmentsByUser = async (req, res) => {
 
     // Map results to the format you want
     const formattedAppointments = upcomingAppointments.map((appt) => ({
+      _id: appt._id,
       doctorId: appt.doctor,
       userId: appt.user,
       appointmentTime: appt.appointmentTime,
@@ -126,7 +127,7 @@ exports.getUpcomingAppointmentsByUser = async (req, res) => {
       status: appt.status,
     }));
 
-    console.log("Upcoming formatted appointments:", formattedAppointments);
+    // console.log("Upcoming formatted appointments:", formattedAppointments);
     res.json(formattedAppointments);
   } catch (err) {
     console.error("Error getting upcoming appointments:", err);
@@ -175,6 +176,7 @@ exports.getUpcomingAppointmentsByDoctor = async (req, res) => {
       .sort({ appointmentTime: 1 });
      
       const formattedAppointments = upcomingAppointments.map((appt) => ({
+        _id: appt._id,
         doctor: appt.doctor,
         user: appt.user,
         doctorId: appt.doctor._id,

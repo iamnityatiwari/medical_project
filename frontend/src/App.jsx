@@ -22,9 +22,13 @@ import CurrentAppointment from "./components/ClientSideDoctorUI/CurrentAppointme
 import UserWork from "./components/ClientSideDoctorUI/UserWork";
 import SlotTable from "./components/ClientSideDoctorUI/Slot/SlotTable";
 
+
+import MeetingRoom from "./components/ClientSideDoctorUI/MeetingRoom";
+import VideoCallRoom from "./components/VideoCall/VideoCallRoom";
+
 const AppContent = () => {
   const location = useLocation();
-  const hideNavRoutes = ["/", "/signup", "/login"];
+  const hideNavRoutes = ["/", "/signup", "/login", "/room/:roomId"];
 
   const shouldShowNav = !hideNavRoutes.includes(location.pathname);
 
@@ -33,10 +37,11 @@ const AppContent = () => {
       {shouldShowNav && <UnifiedNavBar />}
       <div className="min-h-screen bg-gray-100 mt-8">
         <Routes>
-          <Route path="/test" element={<SlotTable/>} />"
+  
           <Route path="/" element={<LoginPage />} />
           <Route path="/signup" element={<SignUpPage />} />
-
+          <Route path="/room/:roomId" element={<VideoCallRoom />} />
+          
           {/* USER SIDE */}
           <Route
             path="/user"
@@ -51,6 +56,7 @@ const AppContent = () => {
             <Route  path="profile" element={<Profile />} />
             <Route path="history" element={<HistoryAppointment />} />
             <Route path="current" element={<CurrentAppointment />} />
+            <Route path="current/meeting/:id" element={<MeetingRoom />} />
           </Route>
 
           <Route
