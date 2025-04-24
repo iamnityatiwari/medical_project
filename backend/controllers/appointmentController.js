@@ -163,19 +163,22 @@ exports.getPastAppointmentsByDoctor = async (req, res) => {
 exports.getUpcomingAppointmentsByDoctor = async (req, res) => {
   try {
     const { doctorId } = req.params;
-
+    // console.log("Doctor ID:", doctorId);
     const today = new Date();
     today.setHours(0, 0, 0, 0); // set to start of today
 
     const upcomingAppointments = await Appointment.find({
       doctor: doctorId,
       appointmentTime: { $gte: today },
-    })
+    }).populate("user", "name email")
+      .populate("doctor", "name")
       .sort({ appointmentTime: 1 });
-
+     
       const formattedAppointments = upcomingAppointments.map((appt) => ({
-        doctorId: appt.doctor,
-        userId: appt.user,
+        doctor: appt.doctor,
+        user: appt.user,
+        doctorId: appt.doctor._id,
+        userId: appt.user._id,
         appointmentTime: appt.appointmentTime,
         slot: appt.slot,
         date: appt.date,
@@ -184,7 +187,7 @@ exports.getUpcomingAppointmentsByDoctor = async (req, res) => {
         description: appt.description,
         status: appt.status,
       }));
-
+    
     res.json(formattedAppointments);
   } catch (err) {
     console.error("Error getting upcoming doctor appointments:", err);

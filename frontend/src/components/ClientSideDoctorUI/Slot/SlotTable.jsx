@@ -3,17 +3,41 @@ import { generateSlots } from "./Slotutils";
 import { SlotBookingFrom } from "./SlotBookingFrom";
 import axios from "axios";
 import { useNavigate } from "react-router-dom"; 
+import { formatTime12Hour } from "../../Services/services1";
+import {useNotification} from "../../../store/NotificationContext";
 
-const SlotTable = ({ selectedSlots, setSelectedSlots, doctorId }) => {
-  const navigate = useNavigate();
+const SlotTable = ({ selectedSlots, setSelectedSlots, doctorId , doctor}) => {
+  const navigate = useNavigate(); //use for navigation
+
+  const { showNotification } = useNotification(); //use for notification
+
   const [selectedDate, setSelectedDate] = useState("");
   const currentUserId = localStorage.getItem("userId");
   const [activeSlotForm, setActiveSlotForm] = useState(null); // For showing the form
+  
+  const [user, setUser] = useState({});
   const [formData, setFormData] = useState({
-    name: "",
-    age: "",
+    name: user.name || "",
+    age: user.age || "",
     description: "",
   });
+  const userId = localStorage.getItem("userId");
+  useEffect(() => {
+    const fetchUser = async () => {
+      try {
+        const res = await axios.get(`/api/users/${userId}`);
+        setUser(res.data);
+        const { name, age } = res.data;
+        setFormData({name: name || "", age: age || "", description: ""});
+        // console.log("User data:", res.data);
+      } catch (err) {
+        console.error("Error fetching user data:", err);
+      }
+    };
+    fetchUser();
+  }, [userId]);
+
+  
 
   const today = new Date();
   const todayStr = today.toLocaleDateString("en-CA"); // '2025-04-23' in local time
@@ -58,7 +82,8 @@ const SlotTable = ({ selectedSlots, setSelectedSlots, doctorId }) => {
       console.log("📦 Payload for booking:", payload);
       const res = await axios.post("/api/appointments/create", payload);
       console.log("✅ Appointment booked:", res.data);
-      alert("Appointment successfully booked.");
+      showNotification("Appointment booked successfully!", "success");
+      // alert("Appointment successfully booked.");
       setSelectedSlots((prev) => [
         ...prev,
         newAppointment,
@@ -74,10 +99,15 @@ const SlotTable = ({ selectedSlots, setSelectedSlots, doctorId }) => {
 
 
     setActiveSlotForm(null);
-    setFormData({ name: "", age: "", description: "" });
+    setFormData({ name: user.name || "",
+      age: user.age || "", description: "" });
   };
-
-  const slots = generateSlots("4:00", "11:00", 20, "7:00", "7:40"); // doctor's time slots backend fetch karna hai
+  const START_TIME = doctor.startTime; // "4:00"
+  const END_TIME = doctor.endTime; // "11:00"
+  const INTERVAL = doctor.interval; // 20 minutes
+  const BREAK_START = doctor.breakStart; // "7:00"
+  const BREAK_END = doctor.breakEnd; // "7:40"
+  const slots = generateSlots(START_TIME, END_TIME, INTERVAL, BREAK_START, BREAK_END); // doctor's time slots backend fetch karna hai
   // console.log(selectedSlots);
   return (
     <div className="bg-white  rounded-2xl shadow-md border border-red-300  ">
@@ -101,6 +131,7 @@ const SlotTable = ({ selectedSlots, setSelectedSlots, doctorId }) => {
 
           <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-4">
             {slots.map((slot, idx) => {
+              const [slotLeft, slotRight] = slot.split(" -");
               const bookedSlot = selectedSlots.find(
                 (item) =>
                   item.slot === slot &&
@@ -135,7 +166,7 @@ const SlotTable = ({ selectedSlots, setSelectedSlots, doctorId }) => {
                         ? bookedByUser === currentUserId
                           ? "You Booked"
                           : "Booked"
-                        : slot}
+                        :formatTime12Hour(slotLeft) + " - "  + formatTime12Hour(slotRight)}
                     </span>
 
                     {/* Hover "Book Now" only for available slots */}

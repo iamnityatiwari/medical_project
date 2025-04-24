@@ -24,7 +24,7 @@ export const generateSlots = (start, end, interval, breakStart, breakEnd) => {
       const toM = (current + interval) % 60;
   
       slots.push(
-        `${fromH}.${fromM.toString().padStart(2, "0")} - ${toH}.${toM
+        `${fromH}:${fromM.toString().padStart(2, "0")} - ${toH}:${toM
           .toString()
           .padStart(2, "0")}`
       );

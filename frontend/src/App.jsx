@@ -31,7 +31,7 @@ const AppContent = () => {
   return (
     <>
       {shouldShowNav && <UnifiedNavBar />}
-      <div className="min-h-screen bg-gray-100">
+      <div className="min-h-screen bg-gray-100 mt-8">
         <Routes>
           <Route path="/test" element={<SlotTable/>} />"
           <Route path="/" element={<LoginPage />} />

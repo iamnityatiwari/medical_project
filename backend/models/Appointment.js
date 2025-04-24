@@ -16,11 +16,11 @@ const appointmentSchema = new mongoose.Schema({
     required: true,
   },
   slot: {
-    type: String, // e.g. "6.41 - 7.00"
+    type: String,
     required: true,
   },
   date: {
-    type: String, // e.g. "2025-04-22"
+    type: String,
     required: true,
   },
   name: {
@@ -28,7 +28,7 @@ const appointmentSchema = new mongoose.Schema({
     required: true,
   },
   age: {
-    type: String, // or Number, depending on your use
+    type: String,
     required: true,
   },
   description: {
@@ -38,6 +38,22 @@ const appointmentSchema = new mongoose.Schema({
     type: String,
     enum: ["Pending", "Confirmed", "Completed", "Cancelled"],
     default: "Pending",
+  },
+  roomId: {
+    type: String,
+    default: null,
+  },
+  isInCall: {
+    type: Boolean,
+    default: false,
+  },
+  callStartedAt: {
+    type: Date,
+    default: null,
+  },
+  callEndedAt: {
+    type: Date,
+    default: null,
   },
 }, {
   timestamps: true,

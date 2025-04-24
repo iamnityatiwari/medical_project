@@ -34,35 +34,31 @@ const UserDashboard = () => {
       {/* Sidebar */}
       <div
         ref={sidebarRef}
-        className={`fixed top-0 left-0 h-full w-64 bg-red-600 text-white p-6 z-50 transform transition-transform duration-300 ${
-          isSidebarOpen ? "translate-x-0" : "-translate-x-full"
-        }`}
+        className={`fixed top-0 left-0 h-full w-64 bg-red-600 text-white p-6 z-50 transform transition-transform duration-300 ${isSidebarOpen ? "translate-x-0" : "-translate-x-full"
+          }`}
       >
         <h2 className="text-2xl font-bold mb-10">User Dashboard</h2>
         <nav className="flex flex-col space-y-6">
           <Link
             to="/user/profile"
-            className={`hover:underline ${
-              location.pathname.includes("profile") && "font-bold underline"
-            }`}
+            className={`hover:underline ${location.pathname.includes("profile") && "font-bold underline"
+              }`}
             onClick={() => setIsSidebarOpen(false)}
           >
             Profile
           </Link>
           <Link
             to="/user/history"
-            className={`hover:underline ${
-              location.pathname.includes("history") && "font-bold underline"
-            }`}
+            className={`hover:underline ${location.pathname.includes("history") && "font-bold underline"
+              }`}
             onClick={() => setIsSidebarOpen(false)}
           >
             History Appointment
           </Link>
           <Link
             to="/user/current"
-            className={`hover:underline ${
-              location.pathname.includes("current") && "font-bold underline"
-            }`}
+            className={`hover:underline ${location.pathname.includes("current") && "font-bold underline"
+              }`}
             onClick={() => setIsSidebarOpen(false)}
           >
             Current Appointment
@@ -79,9 +75,10 @@ const UserDashboard = () => {
       )}
 
       {/* Main content */}
-      <div className="relative z-10 p-4 lg:ml-64">
+      <div className="relative z-10 xl:mx-64 lg:mx-32 min-h-screen p-4">
         <Outlet />
       </div>
+
     </div>
   );
 };

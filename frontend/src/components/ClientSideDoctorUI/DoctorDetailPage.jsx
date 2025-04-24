@@ -21,7 +21,7 @@ const DoctorDetailPage = () => {
   // const [showForm, setShowForm] = useState(false);
 
   const [selectedSlots, setSelectedSlots] = useState([]); // For storing selected slots{Slottbale} => object{Name,Slot, time, date}
-  console.log(selectedSlots);
+  // console.log(selectedSlots);
   
   const userId = localStorage.getItem("userId");
 
@@ -133,6 +133,7 @@ const DoctorDetailPage = () => {
             selectedSlots={selectedSlots}
             setSelectedSlots={setSelectedSlots}
             doctorId={id}
+            doctor={doctor}
           />
        
         
