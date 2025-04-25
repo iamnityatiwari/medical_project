@@ -205,7 +205,7 @@ exports.updateAppointmentStatus = async (req, res) => {
     const { appointmentId } = req.params;
     const { status, doctorId } = req.body; // doctorId must be passed in request body
 
-    const validStatuses = ["Pending", "Confirmed", "Completed", "Cancelled"];
+    const validStatuses = ["pending", "confirmed", "completed", "cancelled"];
     if (!validStatuses.includes(status)) {
       return res.status(400).json({ message: "Invalid status value." });
     }

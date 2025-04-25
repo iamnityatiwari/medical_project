@@ -36,8 +36,8 @@ const appointmentSchema = new mongoose.Schema({
   },
   status: {
     type: String,
-    enum: ["Pending", "Confirmed", "Completed", "Cancelled"],
-    default: "Pending",
+    enum: ["pending", "confirmed", "completed", "cancelled"],
+    default: "pending",
   },
   roomId: {
     type: String,
