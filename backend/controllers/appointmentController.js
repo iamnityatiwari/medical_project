@@ -247,6 +247,7 @@ exports.updateAppointmentStatus = async (req, res) => {
 
 
 
+
 // Delete appointment only if it's today or a past date
 exports.deleteAppointment = async (req, res) => {
   try {

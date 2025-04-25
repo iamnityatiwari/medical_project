@@ -1,68 +1,110 @@
-// DoctorAIChatbot.js
-import { useState } from "react";
+import React, { useState, useEffect, useRef } from "react";
+import axios from "axios";
 
-const DoctorAIChatbot = () => {
+const DoctorAIChatbot = ({ doctorId }) => {
   const [messages, setMessages] = useState([]);
   const [userInput, setUserInput] = useState("");
+  const [isTyping, setIsTyping] = useState(false);
+  const chatEndRef = useRef(null);
 
-  // Handle user message
-  const handleSendMessage = () => {
-    if (userInput.trim() === "") return;
-    
-    // Add user message
-    setMessages([...messages, { text: userInput, sender: "user" }]);
-    
-    // Simulate AI response
-    setTimeout(() => {
-      const botResponse = getBotResponse(userInput);
-      setMessages((prevMessages) => [
-        ...prevMessages,
-        { text: botResponse, sender: "bot" },
+  const scrollToBottom = () => {
+    chatEndRef.current?.scrollIntoView({ behavior: "smooth" });
+  };
+
+  useEffect(() => {
+    scrollToBottom();
+  }, [messages, isTyping]);
+
+  const handleSendMessage = async () => {
+    if (userInput.trim() === "") {
+      alert("Please enter your message.");
+      return;
+    }
+
+    const userMsg = { text: userInput, sender: "user", timestamp: new Date() };
+    setMessages((prev) => [...prev, userMsg]);
+    setIsTyping(true);
+
+    try {
+      const response = await axios.post("http://localhost:9000/query/", {
+        doctor_id: doctorId,
+        user_query: userInput,
+      });
+
+      const botMsg = {
+        text: response.data.result,
+        sender: "bot",
+        timestamp: new Date(),
+      };
+
+      setMessages((prev) => [...prev, botMsg]);
+    } catch (error) {
+      setMessages((prev) => [
+        ...prev,
+        {
+          text: "❌ Failed to get a response. Please try again later.",
+          sender: "bot",
+          timestamp: new Date(),
+        },
       ]);
-    }, 1000);
-    
-    // Clear user input field
+    } finally {
+      setIsTyping(false);
+    }
+
     setUserInput("");
   };
 
-  // Get bot response based on user input
-  const getBotResponse = (input) => {
-    if (input.toLowerCase().includes("available")) {
-      return "The doctor is currently unavailable. How can I assist you?";
-    } else if (input.toLowerCase().includes("report")) {
-      return "Please share the patient's report to help you better.";
-    } else if (input.toLowerCase().includes("medicine")) {
-      return "Based on the symptoms, I would suggest medicine X. Please confirm with the doctor.";
-    } else {
-      return "I am here to help! Ask me anything.";
-    }
-  };
-
   return (
-    <div className="bg-white p-4 rounded shadow-md border-l-4 border-red-500 h-full">
-      <div className="text-lg font-semibold text-red-600 mb-4">Doctor AI Chatbot</div>
-      <div className="h-72 overflow-auto mb-4">
+    <div className="md:col-span-2 bg-white p-6 rounded shadow-md border-l-4 border-red-500">
+      {/* Header */}
+      <div className="text-2xl font-bold text-red-600 mb-4 flex items-center gap-2">
+        🩺 Doctor AI Chatbot
+      </div>
+
+      {/* Chat Window */}
+      <div className="flex-1 overflow-y-auto mb-4 px-1 space-y-3 custom-scrollbar">
         {messages.map((msg, idx) => (
-          <div key={idx} className={msg.sender === "user" ? "text-right" : "text-left"}>
-            <p
-              className={msg.sender === "user" ? "bg-red-600 text-white p-2 rounded" : "bg-gray-100 p-2 rounded"}
+          <div
+            key={idx}
+            className={`flex ${msg.sender === "user" ? "justify-end" : "justify-start"}`}
+          >
+            <div
+              className={`px-4 py-3 max-w-[70%] text-sm break-words shadow-sm ${
+                msg.sender === "user"
+                  ? "bg-red-600 text-white rounded-2xl rounded-br-none"
+                  : "bg-gray-100 text-gray-800 rounded-2xl rounded-bl-none"
+              }`}
             >
               {msg.text}
-            </p>
+            </div>
           </div>
         ))}
+
+        {/* Typing Indicator */}
+        {isTyping && (
+          <div className="flex justify-start">
+            <div className="bg-gray-100 text-gray-600 px-4 py-3 rounded-2xl text-sm max-w-[70%] animate-pulse">
+              Typing...
+            </div>
+          </div>
+        )}
+
+        <div ref={chatEndRef}></div>
       </div>
-      <div className="flex items-center space-x-2">
+
+      {/* Input Section */}
+      <div className="flex items-center gap-2">
         <input
           type="text"
-          className="border border-gray-300 rounded p-2 w-full"
           placeholder="Type your message..."
+          className="flex-1 px-4 py-2 border border-gray-300 rounded-full focus:outline-none focus:ring-2 focus:ring-red-500 text-sm"
           value={userInput}
           onChange={(e) => setUserInput(e.target.value)}
+          onKeyDown={(e) => e.key === "Enter" && handleSendMessage()}
         />
         <button
           onClick={handleSendMessage}
-          className="bg-red-600 hover:bg-red-700 text-white p-2 rounded"
+          className="bg-red-600 hover:bg-red-700 text-white px-5 py-2 rounded-full transition-all text-sm"
         >
           Send
         </button>

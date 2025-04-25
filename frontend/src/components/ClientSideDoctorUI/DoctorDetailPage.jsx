@@ -146,7 +146,7 @@ const DoctorDetailPage = () => {
 
         {/* Chatbot */}
         <div className="col-span-1 h-[410px] overflow-y-auto my-4">
-          <DoctorAIChatbot />
+          <DoctorAIChatbot doctorId={id} />
         </div>
       </div>
     </div>
