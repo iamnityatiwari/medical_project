@@ -1,11 +1,15 @@
 import React, { useEffect, useRef } from "react";
-import { useParams } from "react-router-dom";
+import { useParams, useNavigate } from "react-router-dom";
 
 const VideoCallRoom = () => {
   const { roomId } = useParams();
+  const navigate = useNavigate();
   const jitsiContainerRef = useRef(null);
 
   useEffect(() => {
+    let jitsiApi = null;
+    let interval = null;
+
     const loadJitsi = () => {
       if (window.JitsiMeetExternalAPI) {
         const domain = "meet.jit.si";
@@ -22,36 +26,67 @@ const VideoCallRoom = () => {
           interfaceConfigOverwrite: {
             SHOW_JITSI_WATERMARK: false,
             HIDE_INVITE_MORE_HEADER: true,
+            TOOLBAR_BUTTONS: [
+              'microphone',
+              'camera',
+              'hangup',
+              'chat',
+              'tileview',
+              'fullscreen',
+            ],
           },
         };
-        const api = new window.JitsiMeetExternalAPI(domain, options);
-
-        return () => {
-          api.dispose();
-        };
+        jitsiApi = new window.JitsiMeetExternalAPI(domain, options);
       } else {
         console.error("JitsiMeetExternalAPI not loaded.");
       }
     };
 
-    // Wait a little if Jitsi is not ready
-    if (!window.JitsiMeetExternalAPI) {
-      const interval = setInterval(() => {
+    if (window.JitsiMeetExternalAPI) {
+      loadJitsi();
+    } else {
+      interval = setInterval(() => {
         if (window.JitsiMeetExternalAPI) {
           clearInterval(interval);
           loadJitsi();
         }
       }, 100);
-      // Cleanup
-      return () => clearInterval(interval);
-    } else {
-      loadJitsi();
     }
+
+    return () => {
+      if (jitsiApi) jitsiApi.dispose();
+      if (interval) clearInterval(interval);
+    };
   }, [roomId]);
 
+  const handleBack = () => {
+    const role = localStorage.getItem("role");
+    if (role === "doctor") {
+      navigate("/doctor");
+    } else {
+      navigate("/user");
+    }
+  };
+
   return (
-    <div className="w-screen h-screen">
-      <div ref={jitsiContainerRef} style={{ height: "100%", width: "100%" }} />
+    <div className="w-screen h-screen flex flex-col bg-white">
+      <div className="flex items-center justify-between p-4 border-b shadow-sm bg-red-600 text-white">
+        <button
+          onClick={handleBack}
+          className="text-sm px-3 py-1 bg-white text-red-600 rounded hover:bg-red-100 transition"
+        >
+          ← Back
+        </button>
+        <h1 className="text-lg font-semibold">Consultation Room</h1>
+        <div className="w-[80px]" />
+      </div>
+
+      <div className="flex-1 p-2">
+        <div
+          ref={jitsiContainerRef}
+          className="w-full h-full border border-red-200 rounded-lg shadow-md"
+        />
+      </div>
     </div>
   );
 };

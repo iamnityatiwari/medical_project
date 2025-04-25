@@ -12,32 +12,46 @@ const formatDate = (date) =>
 export default function TodayAppointmentsPage() {
   const [appointments, setAppointments] = useState([]);
   const today = new Date();
-  const userId = localStorage.getItem("userId"); // Assuming doctorId is stored here
+  const userId = localStorage.getItem("userId"); // Assuming doctorId
 
   useEffect(() => {
-    const fetchAppointments = async () => {
-      try {
-        const response = await axios.get(
-          `http://localhost:8080/api/appointments/doctor/${userId}/upcoming`
-        );
-        const todayStart = new Date();
-        todayStart.setHours(0, 0, 0, 0);
-        const todayEnd = new Date();
-        todayEnd.setHours(23, 59, 59, 999);
-
-        const todayAppointments = response.data.filter((appt) => {
-          const apptDate = new Date(appt.appointmentTime);
-          return apptDate >= todayStart && apptDate <= todayEnd;
-        });
-
-        setAppointments(todayAppointments);
-      } catch (err) {
-        console.error("Failed to fetch appointments", err);
-      }
-    };
-
     fetchAppointments();
   }, [userId]);
+  // console.log("User ID:", userId);
+  // console.log("appointments:", appointments);
+  const fetchAppointments = async () => {
+    try {
+      const response = await axios.get(
+        `http://localhost:8080/api/appointments/doctor/${userId}/upcoming`
+      );
+      const todayStart = new Date();
+      todayStart.setHours(0, 0, 0, 0);
+      const todayEnd = new Date();
+      todayEnd.setHours(23, 59, 59, 999);
+
+      const todayAppointments = response.data.filter((appt) => {
+        const apptDate = new Date(appt.appointmentTime);
+        return apptDate >= todayStart && apptDate <= todayEnd;
+      });
+
+      setAppointments(todayAppointments);
+    } catch (err) {
+      console.error("Failed to fetch appointments", err);
+    }
+  };
+
+  const updateStatus = async (appointmentId, status) => {
+    try {
+      await axios.put(`http://localhost:8080/api/appointments/${appointmentId}/status`, {
+        status,
+        doctorId: userId,
+      });
+      fetchAppointments(); // Refresh list
+    } catch (err) {
+      console.error("Failed to update status", err);
+      alert("Status update failed");
+    }
+  };
 
   return (
     <div className="p-6 bg-gray-50 min-h-screen">
@@ -70,12 +84,12 @@ export default function TodayAppointmentsPage() {
                 <td className="px-6 py-4">
                   <span
                     className={`px-2 py-1 rounded-full text-xs font-medium ${
-                      appt.status === "Pending"
+                      appt.status === "pending"
                         ? "bg-yellow-100 text-yellow-800"
-                        : appt.status === "Completed"
-                        ? "bg-green-100 text-green-800"
                         : appt.status === "confirmed"
                         ? "bg-blue-100 text-blue-800"
+                        : appt.status === "completed"
+                        ? "bg-green-100 text-green-800"
                         : "bg-gray-200 text-gray-700"
                     }`}
                   >
@@ -83,22 +97,62 @@ export default function TodayAppointmentsPage() {
                   </span>
                 </td>
                 <td className="px-6 py-4 text-right space-x-2">
-                  {appt.status === "confirmed" && (
-                    <a
-                      href={`/room/room-${appt._id}`}
-                      target="_blank"
-                      rel="noopener noreferrer"
-                      className="px-3 py-1 rounded bg-blue-600 text-white text-xs hover:bg-blue-700"
-                    >
-                      Start Call
-                    </a>
+                  {appt.status === "pending" && (
+                    <>
+                      <button
+                        onClick={() =>
+                          updateStatus(appt._id, "confirmed")
+                        }
+                        className="px-3 py-1 rounded bg-blue-600 text-white text-xs hover:bg-blue-700"
+                      >
+                        Confirm
+                      </button>
+                      <button
+                        onClick={() =>
+                          updateStatus(appt._id, "cancelled")
+                        }
+                        className="px-3 py-1 rounded bg-red-600 text-white text-xs hover:bg-red-700"
+                      >
+                        Cancel
+                      </button>
+                    </>
                   )}
-                  <button className="px-3 py-1 rounded bg-green-600 text-white text-xs hover:bg-green-700">
-                    Complete
-                  </button>
-                  <button className="px-3 py-1 rounded bg-red-600 text-white text-xs hover:bg-red-700">
-                    Cancel
-                  </button>
+
+                  {appt.status === "confirmed" && (
+                    <>
+                      <a
+                        href={`/room/room-${appt._id}`}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="px-3 py-1 rounded bg-blue-600 text-white text-xs hover:bg-blue-700"
+                      >
+                        Start Call
+                      </a>
+                      <button
+                        onClick={() =>
+                          updateStatus(appt._id, "completed")
+                        }
+                        className="px-3 py-1 rounded bg-green-600 text-white text-xs hover:bg-green-700"
+                      >
+                        Complete
+                      </button>
+                      <button
+                        onClick={() =>
+                          updateStatus(appt._id, "cancelled")
+                        }
+                        className="px-3 py-1 rounded bg-red-600 text-white text-xs hover:bg-red-700"
+                      >
+                        Cancel
+                      </button>
+                    </>
+                  )}
+
+                  {(appt.status === "completed" ||
+                    appt.status === "cancelled") && (
+                    <span className="text-xs text-gray-400 italic">
+                      No actions available
+                    </span>
+                  )}
                 </td>
               </tr>
             ))}

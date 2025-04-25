@@ -20,28 +20,29 @@ import Profile from "./components/ClientSideDoctorUI/Profile";
 import HistoryAppointment from "./components/ClientSideDoctorUI/HistoryAppointment";
 import CurrentAppointment from "./components/ClientSideDoctorUI/CurrentAppointment";
 import UserWork from "./components/ClientSideDoctorUI/UserWork";
-import SlotTable from "./components/ClientSideDoctorUI/Slot/SlotTable";
 
 
-import MeetingRoom from "./components/ClientSideDoctorUI/MeetingRoom";
+
+// NEW: Import video call room component
 import VideoCallRoom from "./components/VideoCall/VideoCallRoom";
 
 const AppContent = () => {
   const location = useLocation();
-  const hideNavRoutes = ["/", "/signup", "/login", "/room/:roomId"];
+  const hideNavRoutes = ["/", "/signup", "/login"];
 
-  const shouldShowNav = !hideNavRoutes.includes(location.pathname);
-
+  // Check for dynamic room path
+  const isRoomRoute = location.pathname.startsWith("/room/");
+  const shouldShowNav = !hideNavRoutes.includes(location.pathname) && !isRoomRoute;
   return (
     <>
       {shouldShowNav && <UnifiedNavBar />}
       <div className="min-h-screen bg-gray-100 mt-8">
         <Routes>
-  
+
           <Route path="/" element={<LoginPage />} />
           <Route path="/signup" element={<SignUpPage />} />
           <Route path="/room/:roomId" element={<VideoCallRoom />} />
-          
+
           {/* USER SIDE */}
           <Route
             path="/user"
@@ -53,10 +54,10 @@ const AppContent = () => {
           >
             {/* Nested routes under /user */}
             <Route index element={<UserWork />} />
-            <Route  path="profile" element={<Profile />} />
+            <Route path="profile" element={<Profile />} />
             <Route path="history" element={<HistoryAppointment />} />
             <Route path="current" element={<CurrentAppointment />} />
-            <Route path="current/meeting/:id" element={<MeetingRoom />} />
+
           </Route>
 
           <Route
