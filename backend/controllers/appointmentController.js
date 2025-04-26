@@ -142,7 +142,7 @@ exports.getUpcomingAppointmentsByUser = async (req, res) => {
 exports.getPastAppointmentsByDoctor = async (req, res) => {
   try {
     const { doctorId } = req.params;
-
+    console.log("Past Doctor ID:", doctorId);
     const today = new Date();
     today.setHours(0, 0, 0, 0); // set to start of today
 
@@ -164,7 +164,7 @@ exports.getPastAppointmentsByDoctor = async (req, res) => {
 exports.getUpcomingAppointmentsByDoctor = async (req, res) => {
   try {
     const { doctorId } = req.params;
-    // console.log("Doctor ID:", doctorId);
+    console.log("Upcoming Doctor ID:", doctorId);
     const today = new Date();
     today.setHours(0, 0, 0, 0); // set to start of today
 
@@ -278,3 +278,19 @@ exports.deleteAppointment = async (req, res) => {
   }
 };
 
+
+
+// Controller for getting total patients for a specific doctor
+exports.getTotalPatientsByDoctor = async (req, res) => {
+  try {
+    const { doctorId } = req.params;
+    console.log("Total Doctor ID:", doctorId);
+    // Count the number of unique patients for the specific doctor (based on appointments)
+    const totalPatients = await Appointment.distinct('user', { doctor: doctorId }).countDocuments();
+    console.log("Total patients for doctor:", totalPatients);
+    res.json({ count: totalPatients });
+  } catch (err) {
+    console.error("Error getting total patients:", err);
+    res.status(500).json({ message: "Failed to get total patients." });
+  }
+};

@@ -37,3 +37,6 @@ async def upload_pdf(doctor_id: str = Form(...), file: UploadFile = Form(...)):
     db.save_local(db_path)
 
     return {"message": "PDF uploaded and processed successfully", "vectorstore_path": db_path}
+
+
+#uvicorn main:app --reload --port 9000

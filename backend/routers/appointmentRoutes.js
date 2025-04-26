@@ -24,4 +24,7 @@ router.put("/:appointmentId/status", appointmentController.updateAppointmentStat
 // ❌ Disabled: Get all appointments for a doctor
 // router.get("/doctor/:doctorId", appointmentController.getAppointmentsByDoctor);
 
+// Route to get total patients for a specific doctor
+router.get("/:doctorId/totalPatients", appointmentController.getTotalPatientsByDoctor);
+
 module.exports = router;
