@@ -2,6 +2,7 @@ import React, { useState, useEffect, useRef } from "react";
 import axios from "axios";
 
 const DoctorAIChatbot = ({ doctorId }) => {
+  const userId = localStorage.getItem("userId");
   const [messages, setMessages] = useState([]);
   const [userInput, setUserInput] = useState("");
   const [isTyping, setIsTyping] = useState(false);
@@ -12,8 +13,23 @@ const DoctorAIChatbot = ({ doctorId }) => {
   };
 
   useEffect(() => {
+    fetchChatHistory();
+  }, []);
+
+  useEffect(() => {
     scrollToBottom();
   }, [messages, isTyping]);
+
+  const fetchChatHistory = async () => {
+    try {
+      const response = await axios.get(`http://localhost:8080/api/chat/${doctorId}/${userId}`);
+      if (response.data && response.data.messages) {
+        setMessages(response.data.messages);
+      }
+    } catch (error) {
+      console.error("Failed to fetch chat history", error);
+    }
+  };
 
   const handleSendMessage = async () => {
     if (userInput.trim() === "") {
@@ -26,6 +42,7 @@ const DoctorAIChatbot = ({ doctorId }) => {
     setIsTyping(true);
 
     try {
+      // First, send query to get bot response
       const response = await axios.post("http://localhost:9000/query/", {
         doctor_id: doctorId,
         user_query: userInput,
@@ -37,8 +54,17 @@ const DoctorAIChatbot = ({ doctorId }) => {
         timestamp: new Date(),
       };
 
+      // Save both user and bot messages in backend
+      await axios.post("http://localhost:8080/api/chat/save", {
+        doctorId,
+        userId,
+        userQuery: userInput,
+        botResponse: response.data.result,
+      });
+
       setMessages((prev) => [...prev, botMsg]);
     } catch (error) {
+      console.error("Failed to send message", error);
       setMessages((prev) => [
         ...prev,
         {
@@ -49,9 +75,8 @@ const DoctorAIChatbot = ({ doctorId }) => {
       ]);
     } finally {
       setIsTyping(false);
+      setUserInput("");
     }
-
-    setUserInput("");
   };
 
   return (
@@ -62,7 +87,7 @@ const DoctorAIChatbot = ({ doctorId }) => {
       </div>
 
       {/* Chat Window */}
-      <div className="flex-1 overflow-y-auto mb-4 px-1 space-y-3 custom-scrollbar">
+      <div className="flex-1 overflow-y-auto mb-4 px-1 space-y-3 custom-scrollbar" style={{ maxHeight: "500px" }}>
         {messages.map((msg, idx) => (
           <div
             key={idx}

@@ -12,6 +12,7 @@ const errorController = require("./controllers/errorController");
 const doctorRoutes = require("./routers/doctorRoutes");
 const appointmentRoutes = require("./routers/appointmentRoutes");
 const userRoutes = require("./routers/userRoutes");
+const chatRoutes = require("./routers/chatRoutes");
 
 // MongoDB Connection String
  
@@ -33,6 +34,9 @@ app.use("/api/appointments", appointmentRoutes);
 
 
 app.use("/api/users", userRoutes);
+
+app.use('/api/chat', chatRoutes);
+
 
 // 404 Handler
 app.use(errorController.get404);
