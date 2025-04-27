@@ -21,27 +21,31 @@ import HistoryAppointment from "./components/ClientSideDoctorUI/HistoryAppointme
 import CurrentAppointment from "./components/ClientSideDoctorUI/CurrentAppointment";
 import UserWork from "./components/ClientSideDoctorUI/UserWork";
 
-
-
 // NEW: Import video call room component
 import VideoCallRoom from "./components/VideoCall/VideoCallRoom";
+import UserFeedback from "./components/ClientSideDoctorUI/Slot/UserFeedback";
 
 const AppContent = () => {
   const location = useLocation();
-  const hideNavRoutes = ["/", "/signup", "/login"];
 
-  // Check for dynamic room path
+  // List of paths where navbar should NOT show
+  const hideNavRoutes = ["/", "/signup", "/login", "/user/feedback"];
+
   const isRoomRoute = location.pathname.startsWith("/room/");
-  const shouldShowNav = !hideNavRoutes.includes(location.pathname) && !isRoomRoute;
+  const isHideNavRoute = hideNavRoutes.includes(location.pathname);
+
+  const shouldShowNav = !isHideNavRoute && !isRoomRoute;
+
   return (
     <>
       {shouldShowNav && <UnifiedNavBar />}
       <div className="min-h-screen bg-gray-100 mt-8">
         <Routes>
 
+          {/* LOGIN / SIGNUP */}
           <Route path="/" element={<LoginPage />} />
           <Route path="/signup" element={<SignUpPage />} />
-          <Route path="/room/:roomId" element={<VideoCallRoom />} />
+          <Route path="/room/:roomId/:doctorId" element={<VideoCallRoom />} />
 
           {/* USER SIDE */}
           <Route
@@ -57,7 +61,7 @@ const AppContent = () => {
             <Route path="profile" element={<Profile />} />
             <Route path="history" element={<HistoryAppointment />} />
             <Route path="current" element={<CurrentAppointment />} />
-
+            <Route path="feedback" element={<UserFeedback />} />
           </Route>
 
           <Route
@@ -126,6 +130,7 @@ const AppContent = () => {
               </ProtectedRoute>
             }
           />
+          
         </Routes>
       </div>
     </>

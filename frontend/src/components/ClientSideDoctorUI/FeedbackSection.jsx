@@ -1,6 +1,7 @@
 import { useState } from "react";
 
 const FeedbackSection = ({ feedback }) => {
+  console.log("Feedback:", feedback);
   const [showAll, setShowAll] = useState(false);
   const visibleFeedback = showAll ? feedback : feedback.slice(0, 2);
 
@@ -11,20 +12,29 @@ const FeedbackSection = ({ feedback }) => {
       </h4>
 
       <ul
-        className={`text-black space-y-4 ${
-          showAll ? "max-h-64 overflow-y-auto pr-2" : ""
-        }`}
+        className={`text-black space-y-4 ${showAll ? "max-h-64 overflow-y-auto pr-2" : ""
+          }`}
       >
         {visibleFeedback.map((fb, idx) => (
           <li
             key={idx}
             className="bg-white p-3 rounded shadow-sm border-l-4 border-red-400"
           >
-            <p className="font-semibold text-red-700">{fb.name}</p>
+            <p className="font-semibold text-red-700">{fb.patientName}</p>
             <p className="text-sm text-gray-800 mt-1">{fb.comment}</p>
             <p className="text-xs text-gray-500 mt-1">
-              {fb.date} at {fb.time}
+              {new Date(fb.createdAt).toLocaleString("en-IN", {
+                day: "2-digit",
+                month: "2-digit",
+                year: "numeric",
+                hour: "2-digit",
+                minute: "2-digit",
+                hour12: false, // 24-hour format ke liye
+              })}
             </p>
+
+            <p className="text-sm text-yellow-500 mt-1">{fb.rating} ⭐</p>
+
           </li>
         ))}
       </ul>

@@ -121,7 +121,7 @@ export default function TodayAppointmentsPage() {
                   {appt.status === "confirmed" && (
                     <>
                       <a
-                        href={`/room/room-${appt._id}`}
+                        href={`/room/room-${appt._id}/${userId}`}
                         target="_blank"
                         rel="noopener noreferrer"
                         className="px-3 py-1 rounded bg-blue-600 text-white text-xs hover:bg-blue-700"

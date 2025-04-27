@@ -109,21 +109,21 @@ const DoctorDetailPage = () => {
           <div className="bg-white p-6 rounded shadow-md border border-red-300 mb-6">
              
             {/* Queue */}
-            <div className="flex justify-center mb-6">
+            {/* <div className="flex justify-center mb-6">
               <div className="w-24 h-24 rounded-full bg-red-600 flex items-center justify-center text-white text-lg font-bold shadow-lg">
                 Queue: {doctor.currentQueue}
               </div>
-            </div>
+            </div> */}
 
             {/* Slot Time Estimation */}
-            <div className="text-center">
+            {/* <div className="text-center">
               <p className="text-red-700 font-semibold text-lg">
                 Your Slot No: {doctor.currentQueue + 1}
               </p>
               <p className="text-gray-700 text-sm mt-1">
                 Estimated Time: {calculateSlotTime(doctor.startTime, doctor.interval, doctor.currentQueue)}
               </p>
-            </div>
+            </div> */}
 
           </div>
 

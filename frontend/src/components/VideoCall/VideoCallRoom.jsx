@@ -3,6 +3,7 @@ import { useParams, useNavigate } from "react-router-dom";
 
 const VideoCallRoom = () => {
   const { roomId } = useParams();
+  const {doctorId} = useParams();
   const navigate = useNavigate();
   const jitsiContainerRef = useRef(null);
 
@@ -64,7 +65,7 @@ const VideoCallRoom = () => {
     if (role === "doctor") {
       navigate("/doctor");
     } else {
-      navigate("/user");
+      navigate("/user/feedback", { state: { doctorId } });
     }
   };
 

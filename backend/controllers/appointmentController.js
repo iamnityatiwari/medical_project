@@ -62,7 +62,7 @@ exports.createAppointment = async (req, res) => {
       appointmentTime,
       description,
       selected,
-      status: "Pending",
+      status: "pending",
     });
     console.log("New appointment object:", newAppointment);
     const savedAppointment = await newAppointment.save();

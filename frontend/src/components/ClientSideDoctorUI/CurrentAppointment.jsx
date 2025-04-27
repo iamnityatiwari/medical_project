@@ -66,7 +66,7 @@ const CurrentAppointment = () => {
                   {appt.status === "confirmed" && (
                     <div className="mt-4 text-right">
                       <a
-                        href={`/room/room-${appt._id}`}
+                        href={`/room/room-${appt._id}/${appt.doctorId}`}
                         target="_blank"
                         rel="noopener noreferrer"
                         className="inline-block px-4 py-2 bg-blue-600 text-white text-sm rounded hover:bg-blue-700"

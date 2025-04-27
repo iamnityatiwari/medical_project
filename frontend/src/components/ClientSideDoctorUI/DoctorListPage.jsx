@@ -28,7 +28,7 @@ const DoctorListPage = () => {
   }, []);
 
   const filteredDoctors = doctors.filter((doc) =>
-    (doc.name + doc.specialty).toLowerCase().includes(searchTerm.toLowerCase())
+    (doc.name + doc.specialization).toLowerCase().includes(searchTerm.toLowerCase())
   );
 
   return (

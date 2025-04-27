@@ -9,6 +9,7 @@ const {
   getAllDoctors,
   getDoctorById,
   updateDoctorById,
+  submitDoctorFeedback,
 } = require("../controllers/doctorController");
 
 // Register & Login
@@ -24,5 +25,7 @@ router.put("/profile", updateDoctorProfile);     // PUT /api/doctor/profile
 router.get("/", getAllDoctors);                  // GET /api/doctor
 router.get("/:id", getDoctorById);               // GET /api/doctor/:id
 router.put("/:id", updateDoctorById);            // PUT /api/doctor/:id
+
+router.post("/:id/feedback", submitDoctorFeedback); // POST /api/doctor/:id/feedback
 
 module.exports = router;

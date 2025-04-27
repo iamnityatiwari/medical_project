@@ -148,6 +148,38 @@ const updateDoctorById = async (req, res) => {
 };
 
 
+const submitDoctorFeedback = async (req, res) => {
+  try {
+    const { rating, comment, patientName } = req.body;
+    const doctorId = req.params.id;
+    console.log("🟡 Submitting feedback for doctor ID:", doctorId);
+    const doctor = await Doctor.findById(doctorId);
+
+    if (!doctor) {
+      return res.status(404).json({ message: "Doctor not found" });
+    }
+
+    // 1. Push new feedback
+    doctor.feedback.push({
+      patientName,
+      comment,
+      rating,
+    });
+
+    // 2. Recalculate average rating
+    const totalRating = doctor.feedback.reduce((acc, item) => acc + item.rating, 0);
+    doctor.rating = totalRating / doctor.feedback.length;
+
+    await doctor.save();
+
+    res.status(201).json({ message: "Feedback submitted successfully", doctor });
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ message: "Something went wrong while submitting feedback" });
+  }
+};
+
+
 module.exports = {
   registerDoctor,
   loginDoctor,
@@ -157,4 +189,5 @@ module.exports = {
   getAllDoctors,
   getDoctorById,
   updateDoctorById,
+  submitDoctorFeedback,
 };
