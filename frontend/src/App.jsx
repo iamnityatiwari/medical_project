@@ -40,7 +40,7 @@ const AppContent = () => {
   return (
     <>
       {shouldShowNav && <UnifiedNavBar />}
-      <div className="min-h-screen bg-gray-100 mt-8">
+      <div className="min-h-screen bg-gray-100 mt-6">
         <Routes>
 
           {/* LOGIN / SIGNUP */}
