@@ -5,26 +5,21 @@ import FeedbackSection from "./FeedbackSection";
 import DoctorAIChatbot from "./DoctorAIChatbot";
 import MyImage from "../../images/abc.webp";
 import axios from "axios";
+import { FaComments } from "react-icons/fa";
+import { motion, AnimatePresence } from "framer-motion"; // 🆕 Animation added
 
-
-//utility functions to calculate slot time and format time
-import { calculateSlotTime,formatTime12Hour } from "../Services/services1"; // Assuming 
+// utility functions
+import { calculateSlotTime, formatTime12Hour } from "../Services/services1";
 import AppointmentSection from "./DoctorSectionUserSide/AppointmentSection";
 import { DoctorPersonalInfo } from "./DoctorSectionUserSide/DoctorPersonalInfo";
 import SlotTable from "./Slot/SlotTable";
-
 
 const DoctorDetailPage = () => {
   const { id } = useParams();
   const [doctor, setDoctor] = useState(null);
   const [loading, setLoading] = useState(true);
-  // const [showForm, setShowForm] = useState(false);
-
-  const [selectedSlots, setSelectedSlots] = useState([]); // For storing selected slots{Slottbale} => object{Name,Slot, time, date}
-  // console.log(selectedSlots);
-  
-  const userId = localStorage.getItem("userId");
-
+  const [selectedSlots, setSelectedSlots] = useState([]);
+  const [isChatbotOpen, setIsChatbotOpen] = useState(false);
 
   useEffect(() => {
     const fetchDoctor = async () => {
@@ -38,9 +33,7 @@ const DoctorDetailPage = () => {
       }
     };
 
-    fetchDoctor();
-    setLoading(true);
-    const fetchselectedSlots = async () => {
+    const fetchSelectedSlots = async () => {
       try {
         const res = await axios.get(`/api/appointments/doctor/${id}/upcoming`);
         setSelectedSlots(res.data);
@@ -50,7 +43,9 @@ const DoctorDetailPage = () => {
         setLoading(false);
       }
     };
-    fetchselectedSlots();
+
+    fetchDoctor();
+    fetchSelectedSlots();
   }, [id]);
 
   if (loading) return <p className="text-center mt-10 text-gray-600">Loading...</p>;
@@ -60,10 +55,8 @@ const DoctorDetailPage = () => {
 
   return (
     <div className="min-h-screen bg-red-50 py-10 px-4">
-      
-      <div className="max-w-6xl mx-auto ">
- 
-        {/* Left + Middle Section */}
+      <div className="max-w-6xl mx-auto">
+        {/* Doctor Info Section */}
         <div className="md:col-span-2 bg-white p-6 rounded shadow-md border-l-4 border-red-500">
           {/* Header */}
           <div className="flex items-center justify-between mb-4">
@@ -83,12 +76,11 @@ const DoctorDetailPage = () => {
               </p>
             </div>
           </div>
-          {/* Show Location */}
+
+          {/* Location */}
           <div className="mb-4 flex justify-end">
             <a
-              href={`https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(
-                doctor.location
-              )}`}
+              href={`https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(doctor.location)}`}
               target="_blank"
               rel="noopener noreferrer"
               className="text-sm text-red-700 hover:underline hover:text-red-800"
@@ -99,56 +91,47 @@ const DoctorDetailPage = () => {
 
           {/* Personal Info */}
           <DoctorPersonalInfo doctor={doctor} />
-          
 
-
-          {/* Appointment Info Section */}
+          {/* Appointment Info */}
           <AppointmentSection doctor={doctor} />
 
-
-          <div className="bg-white p-6 rounded shadow-md border border-red-300 mb-6">
-             
-            {/* Queue */}
-            {/* <div className="flex justify-center mb-6">
-              <div className="w-24 h-24 rounded-full bg-red-600 flex items-center justify-center text-white text-lg font-bold shadow-lg">
-                Queue: {doctor.currentQueue}
-              </div>
-            </div> */}
-
-            {/* Slot Time Estimation */}
-            {/* <div className="text-center">
-              <p className="text-red-700 font-semibold text-lg">
-                Your Slot No: {doctor.currentQueue + 1}
-              </p>
-              <p className="text-gray-700 text-sm mt-1">
-                Estimated Time: {calculateSlotTime(doctor.startTime, doctor.interval, doctor.currentQueue)}
-              </p>
-            </div> */}
-
-          </div>
-
-
-         {/* Slot Booking */}    {/* Appointment Button */}
-         <SlotTable
+          {/* Slot Booking Section */}
+          <SlotTable
             selectedSlots={selectedSlots}
             setSelectedSlots={setSelectedSlots}
             doctorId={id}
             doctor={doctor}
           />
-       
-        
 
-          {/* Feedback Section */}
+          {/* Feedback */}
           <div className="mt-6">
             <FeedbackSection feedback={doctor.feedback || []} />
           </div>
         </div>
-
-        {/* Chatbot */}
-        <div className="col-span-1 h-[410px] overflow-y-auto my-4">
-          <DoctorAIChatbot doctorId={id} />
-        </div>
       </div>
+
+      {/* Floating Chatbot Button */}
+      <button 
+        onClick={() => setIsChatbotOpen(!isChatbotOpen)}
+        className="fixed bottom-6 right-6 bg-red-600 hover:bg-red-700 text-white p-4 rounded-full shadow-lg z-50 transition-transform transform hover:scale-105"
+      >
+        <FaComments size={24} />
+      </button>
+
+      {/* Animated Chatbot Box */}
+      <AnimatePresence>
+        {isChatbotOpen && (
+          <motion.div
+            initial={{ opacity: 0, y: 50 }}
+            animate={{ opacity: 1, y: 0 }}
+            exit={{ opacity: 0, y: 50 }}
+            transition={{ duration: 0.3 }}
+            className="fixed bottom-20 right-4 w-11/12 md:w-96 h-[400px] bg-white rounded-lg shadow-lg border border-red-300 p-4 z-40 overflow-hidden"
+          >
+            <DoctorAIChatbot doctorId={id} />
+          </motion.div>
+        )}
+      </AnimatePresence>
     </div>
   );
 };

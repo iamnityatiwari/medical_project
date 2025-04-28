@@ -42,7 +42,6 @@ const DoctorAIChatbot = ({ doctorId }) => {
     setIsTyping(true);
 
     try {
-      // First, send query to get bot response
       const response = await axios.post("http://localhost:9000/query/", {
         doctor_id: doctorId,
         user_query: userInput,
@@ -54,7 +53,6 @@ const DoctorAIChatbot = ({ doctorId }) => {
         timestamp: new Date(),
       };
 
-      // Save both user and bot messages in backend
       await axios.post("http://localhost:8080/api/chat/save", {
         doctorId,
         userId,
@@ -80,14 +78,14 @@ const DoctorAIChatbot = ({ doctorId }) => {
   };
 
   return (
-    <div className="md:col-span-2 bg-white p-6 rounded shadow-md border-l-4 border-red-500">
+    <div className="flex flex-col h-full ">
       {/* Header */}
-      <div className="text-2xl font-bold text-red-600 mb-4 flex items-center gap-2">
+      <div className="text-xl font-bold text-red-600 mb-2 flex items-center gap-2">
         🩺 Doctor AI Chatbot
       </div>
 
-      {/* Chat Window */}
-      <div className="flex-1 overflow-y-auto mb-4 px-1 space-y-3 custom-scrollbar" style={{ maxHeight: "500px" }}>
+      {/* Chat Messages */}
+      <div className="flex-1 overflow-y-auto mb-3 px-1 space-y-3" style={{ minHeight: "250px", maxHeight: "350px" }}>
         {messages.map((msg, idx) => (
           <div
             key={idx}
@@ -108,16 +106,15 @@ const DoctorAIChatbot = ({ doctorId }) => {
         {/* Typing Indicator */}
         {isTyping && (
           <div className="flex justify-start">
-            <div className="bg-gray-100 text-gray-600 px-4 py-3 rounded-2xl text-sm max-w-[70%] animate-pulse">
+            <div className="bg-gray-100 text-gray-600 px-4 py-2 rounded-2xl text-sm max-w-[70%] animate-pulse">
               Typing...
             </div>
           </div>
         )}
-
-        <div ref={chatEndRef}></div>
+        <div ref={chatEndRef} />
       </div>
 
-      {/* Input Section */}
+      {/* Message Input */}
       <div className="flex items-center gap-2">
         <input
           type="text"
