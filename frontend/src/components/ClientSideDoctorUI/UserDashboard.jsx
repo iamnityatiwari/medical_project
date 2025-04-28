@@ -3,7 +3,7 @@ import { Link, Outlet, useLocation, useNavigate } from "react-router-dom";
 
 const UserDashboard = () => {
   const location = useLocation();
-  const navigate = useNavigate(); // 👈 navigation hook
+  const navigate = useNavigate();
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
   const sidebarRef = useRef();
 
@@ -28,6 +28,7 @@ const UserDashboard = () => {
     { name: "Profile", path: "/user/profile" },
     { name: "History Appointment", path: "/user/history" },
     { name: "Current Appointment", path: "/user/current" },
+   
   ];
 
   return (
@@ -46,17 +47,15 @@ const UserDashboard = () => {
         ${isSidebarOpen ? "translate-x-0" : "-translate-x-full"}`}
       >
         <div className="flex items-center justify-between mb-10">
-          {/* Make Dashboard clickable */}
           <button
             onClick={() => {
-              navigate("/user"); // 👈 on click, go to /user
-              setIsSidebarOpen(false); // 👈 and close sidebar
+              navigate("/user");
+              setIsSidebarOpen(false);
             }}
-            className="text-2xl font-bold text-left hover:underline focus:outline-none"
+            className="text-2xl font-bold hover:underline focus:outline-none"
           >
             Dashboard
           </button>
-          
           <button
             className="text-white hover:text-gray-300 focus:outline-none"
             onClick={() => setIsSidebarOpen(false)}
@@ -81,7 +80,7 @@ const UserDashboard = () => {
         </nav>
       </div>
 
-      {/* Content overlay when sidebar is open */}
+      {/* Overlay when sidebar open */}
       {isSidebarOpen && (
         <div
           className="fixed inset-0 bg-black bg-opacity-40 backdrop-blur-sm z-30 transition-opacity duration-500"
@@ -89,9 +88,11 @@ const UserDashboard = () => {
         ></div>
       )}
 
-      {/* Main content */}
-      <div className="relative z-10 transition-all duration-500 ease-in-out xl:ml-64 lg:ml-32 p-6 min-h-screen bg-white">
-        <Outlet />
+      {/* Main content centered */}
+      <div className="relative z-10 transition-all duration-500 ease-in-out   flex justify-center items-center p-6 min-h-screen bg-white">
+        <div className="w-full max-w-4xl">
+          <Outlet />
+        </div>
       </div>
     </div>
   );

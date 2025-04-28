@@ -83,6 +83,7 @@ const doctorSchema = new mongoose.Schema({
 
 
 
+
 // ✅ Compare password
 doctorSchema.methods.comparePassword = async function (enteredPassword) {
   return await bcrypt.compare(enteredPassword, this.password);

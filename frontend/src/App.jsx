@@ -25,6 +25,7 @@ import UserWork from "./components/ClientSideDoctorUI/UserWork";
 import VideoCallRoom from "./components/VideoCall/VideoCallRoom";
 import UserFeedback from "./components/ClientSideDoctorUI/Slot/UserFeedback";
 
+
 const AppContent = () => {
   const location = useLocation();
 
@@ -61,6 +62,7 @@ const AppContent = () => {
             <Route path="profile" element={<Profile />} />
             <Route path="history" element={<HistoryAppointment />} />
             <Route path="current" element={<CurrentAppointment />} />
+          
             <Route path="feedback" element={<UserFeedback />} />
           </Route>
 

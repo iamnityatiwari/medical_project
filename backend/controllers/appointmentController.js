@@ -111,11 +111,13 @@ exports.getUpcomingAppointmentsByUser = async (req, res) => {
     const upcomingAppointments = await Appointment.find({
       user: userId,
       appointmentTime: { $gte: today },
-    }).sort({ appointmentTime: 1 });
+    }).populate("doctor", "name specialization clinic")
+    .sort({ appointmentTime: 1 });
 
     // Map results to the format you want
     const formattedAppointments = upcomingAppointments.map((appt) => ({
       _id: appt._id,
+      doctor: appt.doctor,
       doctorId: appt.doctor,
       userId: appt.user,
       appointmentTime: appt.appointmentTime,
