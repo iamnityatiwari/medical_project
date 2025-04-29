@@ -72,7 +72,7 @@ const DoctorDetailPage = () => {
                 className="w-20 h-20 object-cover rounded-full border-2 border-red-400 mb-2"
               />
               <p className="text-sm text-gray-600">
-                ⭐ <span className="text-lg font-semibold text-black">{doctor.rating}</span>
+                ⭐ <span className="text-lg font-semibold text-black"> {doctor.rating ? doctor.rating.toFixed(1) : "0.0"}</span>
               </p>
             </div>
           </div>

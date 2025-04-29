@@ -2,11 +2,11 @@ import React, { useState, useEffect } from "react";
 import { generateSlots } from "./Slotutils";
 import { SlotBookingFrom } from "./SlotBookingFrom";
 import axios from "axios";
-import { useNavigate } from "react-router-dom"; 
+import { useNavigate } from "react-router-dom";
 import { formatTime12Hour } from "../../Services/services1";
-import {useNotification} from "../../../store/NotificationContext";
+import { useNotification } from "../../../store/NotificationContext";
 
-const SlotTable = ({ selectedSlots, setSelectedSlots, doctorId , doctor}) => {
+const SlotTable = ({ selectedSlots, setSelectedSlots, doctorId, doctor }) => {
   const navigate = useNavigate(); //use for navigation
 
   const { showNotification } = useNotification(); //use for notification
@@ -14,7 +14,7 @@ const SlotTable = ({ selectedSlots, setSelectedSlots, doctorId , doctor}) => {
   const [selectedDate, setSelectedDate] = useState("");
   const currentUserId = localStorage.getItem("userId");
   const [activeSlotForm, setActiveSlotForm] = useState(null); // For showing the form
-  
+
   const [user, setUser] = useState({});
   const [formData, setFormData] = useState({
     name: user.name || "",
@@ -28,7 +28,7 @@ const SlotTable = ({ selectedSlots, setSelectedSlots, doctorId , doctor}) => {
         const res = await axios.get(`/api/users/${userId}`);
         setUser(res.data);
         const { name, age } = res.data;
-        setFormData({name: name || "", age: age || "", description: ""});
+        setFormData({ name: name || "", age: age || "", description: "" });
         // console.log("User data:", res.data);
       } catch (err) {
         console.error("Error fetching user data:", err);
@@ -37,7 +37,7 @@ const SlotTable = ({ selectedSlots, setSelectedSlots, doctorId , doctor}) => {
     fetchUser();
   }, [userId]);
 
-  
+
 
   const today = new Date();
   const todayStr = today.toLocaleDateString("en-CA"); // '2025-04-23' in local time
@@ -99,8 +99,10 @@ const SlotTable = ({ selectedSlots, setSelectedSlots, doctorId , doctor}) => {
 
 
     setActiveSlotForm(null);
-    setFormData({ name: user.name || "",
-      age: user.age || "", description: "" });
+    setFormData({
+      name: user.name || "",
+      age: user.age || "", description: ""
+    });
   };
   const START_TIME = doctor.startTime; // "4:00"
   const END_TIME = doctor.endTime; // "11:00"
@@ -111,7 +113,7 @@ const SlotTable = ({ selectedSlots, setSelectedSlots, doctorId , doctor}) => {
   // console.log(selectedSlots);
   return (
     <div className="bg-white  rounded-2xl shadow-md border border-red-300  ">
-      <div className="max-w-3xl mx-auto bg-white p-6 rounded-2xl shadow-lg">
+      <div className=" mx-auto bg-white p-6 rounded-2xl w-full">
         <h1 className="text-2xl font-bold text-red-600 mb-4">Choose Your Slot</h1>
 
         <label className="block mb-2 text-sm font-medium text-gray-700">Select a Date:</label>
@@ -121,15 +123,25 @@ const SlotTable = ({ selectedSlots, setSelectedSlots, doctorId , doctor}) => {
           value={selectedDate}
           min={todayStr}
           max={sevenDaysLaterStr}
-          onChange={(e) => setSelectedDate(e.target.value)}
+          onChange={(e) => {
+            const selected = e.target.value;
+            const day = new Date(selected).getDay(); // Sunday = 0
+            if (day === 0) {
+
+              showNotification("Sunday is not available for booking. Please select another date.", "info");
+              return;
+            }
+            setSelectedDate(selected);
+          }}
         />
+
 
         <div>
           <h2 className="text-lg font-semibold text-gray-700 mb-3">
             Time Slots for {selectedDate}
           </h2>
 
-          <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-4">
+          <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-4">
             {slots.map((slot, idx) => {
               const [slotLeft, slotRight] = slot.split(" -");
               const bookedSlot = selectedSlots.find(
@@ -158,15 +170,15 @@ const SlotTable = ({ selectedSlots, setSelectedSlots, doctorId , doctor}) => {
                     {/* Time or Booking Status */}
                     <span
                       className={`${!isBooked
-                          ? "group-hover:opacity-0 transition-opacity duration-200"
-                          : ""
+                        ? "group-hover:opacity-0 transition-opacity duration-200"
+                        : ""
                         }`}
                     >
                       {isBooked
                         ? bookedByUser === currentUserId
                           ? "You Booked"
                           : "Booked"
-                        :formatTime12Hour(slotLeft) + " - "  + formatTime12Hour(slotRight)}
+                        : formatTime12Hour(slotLeft) + " - " + formatTime12Hour(slotRight)}
                     </span>
 
                     {/* Hover "Book Now" only for available slots */}
@@ -196,19 +208,38 @@ const SlotTable = ({ selectedSlots, setSelectedSlots, doctorId , doctor}) => {
         </div>
 
         {selectedSlots.length > 0 && (
-          <div className="mt-6">
-            <h3 className="text-md font-semibold text-gray-800 mb-2">
-              Selected Slots:
+          <div className="mt-8">
+            <h3 className="text-2xl font-bold text-red-600 mb-4">
+              Your Booked Slots
             </h3>
-            <ul className="list-disc list-inside text-sm text-gray-700">
-              {selectedSlots.map((item, index) => (
-                (item.userId === currentUserId && <li key={index}>
-                  {item.date} - {item.slot} | {item.name} | Age: {item.age}
-                </li>)
-              ))}
-            </ul>
+
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+              {selectedSlots
+                .filter((item) => item.userId === currentUserId)
+                .map((item, index) => (
+                  <div
+                    key={index}
+                    className="bg-red-50 p-4 rounded-lg shadow border border-red-200 flex flex-col sm:flex-row justify-between items-start sm:items-center"
+                  >
+                    <div className="flex flex-col">
+                      <span className="text-gray-800 font-semibold">
+                        📅 {item.date}
+                      </span>
+                      <span className="text-gray-700">
+                        🕒 {item.slot}
+                      </span>
+                      <span className="text-gray-600 text-sm">
+                        👤 {item.name} | Age: {item.age}
+                      </span>
+                    </div>
+
+
+                  </div>
+                ))}
+            </div>
           </div>
         )}
+
       </div>
     </div>
   );

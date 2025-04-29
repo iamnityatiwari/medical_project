@@ -7,7 +7,7 @@ const DoctorAIChatbot = ({ doctorId }) => {
   const [userInput, setUserInput] = useState("");
   const [isTyping, setIsTyping] = useState(false);
   const chatEndRef = useRef(null);
-
+  console.log(messages)
   const scrollToBottom = () => {
     chatEndRef.current?.scrollIntoView({ behavior: "smooth" });
   };
