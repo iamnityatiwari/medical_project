@@ -63,7 +63,7 @@ const VideoCallRoom = () => {
   const handleBack = () => {
     const role = localStorage.getItem("role");
     if (role === "doctor") {
-      navigate("/doctor");
+      navigate("/doctor/appointments/today");
     } else {
       navigate("/user/feedback", { state: { doctorId } });
     }

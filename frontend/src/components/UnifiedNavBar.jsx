@@ -74,9 +74,9 @@ const UnifiedNavBar = () => {
                 <NavLink to="/doctor/profile" onClick={closeMenu}>Profile</NavLink>
                 <NavLink to="/doctor/appointments/today" onClick={closeMenu}>Today's Appointments</NavLink>
                 <NavLink to="/doctor/appointments/history" onClick={closeMenu}>History</NavLink>
-                <NavLink to="/doctor/upcoming" onClick={closeMenu}>Upcoming</NavLink>
+                <NavLink to="/doctor/appointments/upcoming" onClick={closeMenu}>Upcoming</NavLink>
                 <NavLink to="/doctor/assistant" onClick={closeMenu}>AI Assistant</NavLink>
-                <NavLink to="/doctor/messages" onClick={closeMenu}>Messages</NavLink>
+                {/* <NavLink to="/doctor/messages" onClick={closeMenu}>Messages</NavLink> */}
                 <button
                   onClick={() => {
                     logout();

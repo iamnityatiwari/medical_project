@@ -79,7 +79,7 @@ const HistoryAppointment = () => {
   return (
     <div className="min-h-screen bg-gradient-to-tr from-red-50 to-white px-6 py-10">
       <h1 className="text-4xl font-extrabold text-red-600 mb-10 text-center drop-shadow-md">
-        🗓️ Your Appointment History
+        🗓️ Appointment History
       </h1>
 
       {/* Search Filters */}
@@ -142,7 +142,7 @@ const HistoryAppointment = () => {
 
                     <div className="space-y-2">
                       <p className="font-semibold text-red-600 text-lg">
-                        🩺 Dr. {appt.doctor?.name}
+                        🩺  {appt.doctor?.name}
                       </p>
                       <p className="text-sm text-gray-500 mb-2">
                         ({appt.doctor?.specialization})

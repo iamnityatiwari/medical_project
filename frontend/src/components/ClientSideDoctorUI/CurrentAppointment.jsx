@@ -97,7 +97,7 @@ const CurrentAppointment = () => {
 
                     <div className="space-y-2">
                       <p className="font-semibold text-red-600 text-lg">
-                        🩺 Dr. {appt.doctor?.name || "Unknown Doctor"}
+                        🩺{appt.doctor?.name || "Unknown Doctor"}
                       </p>
                       <p className="text-sm text-gray-500 mb-2">
                         ({appt.doctor?.specialization || "General Physician"})

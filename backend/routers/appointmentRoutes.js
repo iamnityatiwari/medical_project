@@ -27,4 +27,7 @@ router.put("/:appointmentId/status", appointmentController.updateAppointmentStat
 // Route to get total patients for a specific doctor
 router.get("/:doctorId/totalPatients", appointmentController.getTotalPatientsByDoctor);
 
+// Route to get unique patients for a specific doctor
+router.get("/doctor/:doctorId/unique-patients", appointmentController.getUniquePatientsByDoctor);
+
 module.exports = router;

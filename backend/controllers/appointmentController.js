@@ -296,3 +296,39 @@ exports.getTotalPatientsByDoctor = async (req, res) => {
     res.status(500).json({ message: "Failed to get total patients." });
   }
 };
+
+
+
+
+
+exports.getUniquePatientsByDoctor = async (req, res) => {
+  try {
+    const { doctorId } = req.params;
+    console.log("Doctor ID:", doctorId);
+
+    // Fetch all appointments for this doctor, populate the user field
+    const appointments = await Appointment.find({ doctor: doctorId })
+      .populate("user", "_id name dob email")
+      .select("user"); // only need the populated user field
+
+    // Extract unique patients using a Map
+    const uniquePatientsMap = new Map();
+
+    appointments.forEach((appt) => {
+      const user = appt.user;
+      if (user && !uniquePatientsMap.has(user._id.toString())) {
+        uniquePatientsMap.set(user._id.toString(), user);
+      }
+    });
+
+    const uniquePatients = Array.from(uniquePatientsMap.values());
+
+    res.json({
+      count: uniquePatients.length,
+      patients: uniquePatients,
+    });
+  } catch (err) {
+    console.error("Error fetching unique patients:", err);
+    res.status(500).json({ message: "Failed to fetch unique patients." });
+  }
+};

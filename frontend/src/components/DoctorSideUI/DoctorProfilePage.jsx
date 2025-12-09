@@ -124,10 +124,6 @@ export default function DoctorProfilePage() {
               <p>{doctor.interval || 15}</p>
             </div>
 
-            <div>
-              <h2 className="text-lg font-semibold mb-2">Current Queue</h2>
-              <p>{doctor.currentQueue || 0}</p>
-            </div>
 
             {/* Timings */}
             <div>

@@ -4,8 +4,9 @@ const Chat = require('../models/Chat');
 exports.getChatByDoctorAndUser = async (req, res) => {
   try {
     const { doctorId, userId } = req.params;
-
+    console.log(`Fetching chat for doctorId: ${doctorId}, userId: ${userId}`);
     let chat = await Chat.findOne({ doctorId, userId });
+    console.log(`Chat found: ${chat}`);
     if (!chat) {
       return res.status(200).json({ messages: [] }); // no chat yet
     }

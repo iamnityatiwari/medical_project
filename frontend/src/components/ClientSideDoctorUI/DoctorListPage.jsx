@@ -36,7 +36,7 @@ const DoctorListPage = () => {
     <div className="min-h-screen bg-white p-6">
       {/* Title */}
       <h1 className="text-4xl font-bold text-center mb-8 text-red-600 drop-shadow-md">
-        Find Your Doctor
+       Doctor List
       </h1>
 
       {/* Search Bar */}

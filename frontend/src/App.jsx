@@ -11,6 +11,7 @@ import DoctorDashboard from "./components/DoctorSideUI/DoctorDashboard";
 import DoctorProfilePage from "./components/DoctorSideUI/DoctorProfilePage";
 import TodayAppointmentsPage from "./components/DoctorSideUI/TodayAppointmentsPage";
 import AppointmentHistoryPage from "./components/DoctorSideUI/AppointmentHistoryPage";
+import UpcomingAppointmentsPage from "./components/DoctorSideUI/UpcomingAppointmentsPage";
 import AIAssistantPage from "./components/DoctorSideUI/AIAssistantPage";
 import MessagesPage from "./components/DoctorSideUI/MessagesPage";
 import SignUpPage from "./components/SignupPage";
@@ -24,6 +25,8 @@ import UserWork from "./components/ClientSideDoctorUI/UserWork";
 // NEW: Import video call room component
 import VideoCallRoom from "./components/VideoCall/VideoCallRoom";
 import UserFeedback from "./components/ClientSideDoctorUI/Slot/UserFeedback";
+import NotFoundPage from "./components/NotFoundPage";
+
 
 
 const AppContent = () => {
@@ -117,6 +120,14 @@ const AppContent = () => {
             }
           />
           <Route
+            path="/doctor/appointments/upcoming"
+            element={
+              <ProtectedRoute allowedRole="doctor">
+                <UpcomingAppointmentsPage />
+              </ProtectedRoute>
+            }
+          />
+          <Route
             path="/doctor/assistant"
             element={
               <ProtectedRoute allowedRole="doctor">
@@ -133,6 +144,9 @@ const AppContent = () => {
             }
           />
           
+
+          {/* no page found */}
+          <Route path="*" element={<NotFoundPage />} />
         </Routes>
       </div>
     </>

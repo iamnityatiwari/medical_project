@@ -22,6 +22,7 @@ const DoctorAIChatbot = ({ doctorId }) => {
 
   const fetchChatHistory = async () => {
     try {
+      console.log(userId, doctorId);
       const response = await axios.get(`http://localhost:8080/api/chat/${doctorId}/${userId}`);
       if (response.data && response.data.messages) {
         setMessages(response.data.messages);
